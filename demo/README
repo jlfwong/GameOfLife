@@ -1,0 +1,18 @@
+The GIFs in this folder were generated with the following commands: 
+
+Glider
+--
+../lifeImage.py -n 100 -f glider.txt -c -s 5 glider.gif
+
+Glider Gun
+--
+../lifeimage.py -n 100 -f glidergun.txt -c -s 5 glidergun.gif
+
+Acorn 
+--
+This one takes a while to generate
+../lifeimage.py -n 1000 -f acorn.txt -c -s 5 acorn.gif
+
+Queen Bee
+--
+../lifeimage.py -n 60 -f queenbee.txt -c -s 10 queenbee.gif
