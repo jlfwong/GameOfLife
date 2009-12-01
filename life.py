@@ -18,15 +18,15 @@ LIVECOND = [2,3]
 BIRTHCOND = [3]
 
 def numNeighbours(x,y,grid,wrap=True):
-""" numNeighbours(x,y,grid,wrap=True):
-- x: the x coordinate of the cell in question
-- y: the y coordinate of the cell in question
-- grid: The 2 dimensional character array containing the ALIVE/DEAD states of the cells
-- wrap: If true, this function will wrap around to check neighbours on the opposite edge
+	""" numNeighbours(x,y,grid,wrap=True):
+	- x: the x coordinate of the cell in question
+	- y: the y coordinate of the cell in question
+	- grid: The 2 dimensional character array containing the ALIVE/DEAD states of the cells
+	- wrap: If true, this function will wrap around to check neighbours on the opposite edge
 
-Returns: number of alive neighbours a cell at position (x,y) in the provided grid has.
+	Returns: number of alive neighbours a cell at position (x,y) in the provided grid has.
 
-"""
+	"""
 	num = 0
 	for dy in [-1,0,1]:
 		ny = y + dy
@@ -53,13 +53,13 @@ Returns: number of alive neighbours a cell at position (x,y) in the provided gri
 	return num
 
 def gridCopy(grid):
-""" gridCopy(grid):
-- grid: the 2 dimensional character array to make a copy of
+	""" gridCopy(grid):
+	- grid: the 2 dimensional character array to make a copy of
 
-Returns: a value (as opposed to reference) copy of the grid.
-This is used to prevent python's automatic use of pointers from interfering with nextGen
+	Returns: a value (as opposed to reference) copy of the grid.
+	This is used to prevent python's automatic use of pointers from interfering with nextGen
 
-"""
+	"""
 	temp = []
 	for i in range(len(grid)):
 		temp.append([])
@@ -68,12 +68,12 @@ This is used to prevent python's automatic use of pointers from interfering with
 	return temp
 
 def nextGen(grid):
-""" nextGen(grid):
-- grid: the 2 dimensional character array to process
+	""" nextGen(grid):
+	- grid: the 2 dimensional character array to process
 
-Returns: the generation following the cells described in grid
+	Returns: the generation following the cells described in grid
 
-"""
+	"""
 	newgrid = gridCopy(grid)
 	for i in range(len(grid)):
 		for j in range(len(grid[i])):
@@ -85,13 +85,13 @@ Returns: the generation following the cells described in grid
 	return gridCopy(newgrid)
 
 def randGrid(rows,columns):
-""" randGrid(rows,columns)
-- rows: the number of rows in the generated grid
-- columns: the number of columns in the generated grid
+	""" randGrid(rows,columns)
+	- rows: the number of rows in the generated grid
+	- columns: the number of columns in the generated grid
 
-Returns: a randomized ALIVE/DEAD grid
+	Returns: a randomized ALIVE/DEAD grid
 
-"""
+	"""
 	grid = []
 	for i in range(rows):
 		grid.append([])
@@ -100,14 +100,14 @@ Returns: a randomized ALIVE/DEAD grid
 	return grid
 
 def str2grid(string, liveChar, deadChar):
-""" str2grid(string, liveChar, deadChar)
-- string: the input string with newlines to convert to a grid
-- liveChar: the character representing an alive cell in string
-- deadChar: the character representing a dead cell in string
+	""" str2grid(string, liveChar, deadChar)
+	- string: the input string with newlines to convert to a grid
+	- liveChar: the character representing an alive cell in string
+	- deadChar: the character representing a dead cell in string
 
-Returns: a grid correspoding to the provided input string
+	Returns: a grid correspoding to the provided input string
 
-"""
+	"""
 	grid = string.split("\n");
 	grid = filter(lambda x: len(x) > 0, grid)
 	grid = map(lambda x: 
@@ -117,40 +117,40 @@ Returns: a grid correspoding to the provided input string
 	return grid	
 
 def printGrid(grid):
-""" printGrid(grid)
-- grid: 2 dimensional character list
+	""" printGrid(grid)
+	- grid: 2 dimensional character list
 
-Returns: None
+	Returns: None
 
-Prints the grid to the console
+	Prints the grid to the console
 
-"""
+	"""
 	print "\n".join(map("".join,grid))
 
 def saveGrid2Img(grid,filename,scale,colored=False,colors="default",bgcolor="default"): 
-""" saveGrid2Img(grid,filename,scale,colored=False,colors="default",bgcolor="default")
-- grid: 2 dimensional character array with ALIVE/DEAD states
-- filename: string containing the full or relative path to the output file 
-+-> usually a .gif file
-- scale: the number of pixels per cell. 
-+-> Intended for integer values
-+-> 2 means each cell is 2x2 pixels
-- colored: if true, cells will be coloured according to colors
--> If False: alive=black, dead=white
-- colors: a list of 9 RGB tuples representing the colors to be shown depending
-  on the number of living neigbours a live cell has
-+-> Alternatively, the string "default" provides a default orange-red colour scheme
-    and "greyscale" provides a greyscale colour scheme
-- bgcolor: an RGB tuple containing the colour to be used for the background. 
-+-> Ignored if colored = False
-+-> "default" sets the background to dark red
+	""" saveGrid2Img(grid,filename,scale,colored=False,colors="default",bgcolor="default")
+	- grid: 2 dimensional character array with ALIVE/DEAD states
+	- filename: string containing the full or relative path to the output file 
+	+-> usually a .gif file
+	- scale: the number of pixels per cell. 
+	+-> Intended for integer values
+	+-> 2 means each cell is 2x2 pixels
+	- colored: if true, cells will be coloured according to colors
+	-> If False: alive=black, dead=white
+	- colors: a list of 9 RGB tuples representing the colors to be shown depending
+		on the number of living neigbours a live cell has
+	+-> Alternatively, the string "default" provides a default orange-red colour scheme
+			and "greyscale" provides a greyscale colour scheme
+	- bgcolor: an RGB tuple containing the colour to be used for the background. 
+	+-> Ignored if colored = False
+	+-> "default" sets the background to dark red
 
-Returns: None
+	Returns: None
 
-Saves the DEAD/ALIVE states stored in grid to a gif with customizable colour 
-scheme and scale
+	Saves the DEAD/ALIVE states stored in grid to a gif with customizable colour 
+	scheme and scale
 
-"""
+	"""
 	if (colors == "default"):
 		colors = [
 			(100,0,0),
