@@ -285,7 +285,7 @@ each cell 2x2 pixels'''
 	if (options.filein != ""):
 		options.stdin = False
 		if (not path.exists(options.filein)):
-			parser.error("specified file %s does not exist",options.filename)
+			parser.error("specified file '%s' does not exist" % options.filein)
 		else:
 			filein = options.filein
 

@@ -1,7 +1,7 @@
 """
 Conway's Game of Life in Python
 Author: Jamie Wong - http://www.jamie-wong.com
-Date: Nov 30 2009
+Creation Date: Nov 30 2009
 """
 from random import randint
 
@@ -16,22 +16,58 @@ DEAD  = '.'
 LIVECOND = [2,3]
 BIRTHCOND = [3]
 
+def getExpansion(grid):
+	"""getExpansion(grid):
+- grid (2D list): holds the alive/dead state of cells
+
+Return: A list of 4 elements specifying whether or not the grid needs to be
+expanded to accomadate new births
+
+The elements are in the order [left,right,top,bottom]
+"""
+	expand = [False,False,False,False]
+	if (len(grid) == 0 or len(grid[0]) == 0):
+		return expand
+	
+	height = len(grid)
+	width = len(grid[0])
+
+	for y in range(-1,height+1):
+		if (BIRTHCOND.count(numNeighbours(-1,y,grid,False))):
+			expand[0] = True
+		if (BIRTHCOND.count(numNeighbours(width,y,grid,False))):
+			expand[1] = True
+	
+	for x in range(-1,width+1):
+		if (BIRTHCOND.count(numNeighbours(x,-1,grid,False))):
+			expand[2] = True
+		if (BIRTHCOND.count(numNeighbours(x,height,grid,False))):
+			expand[3] = True
+	
+	return expand
+
 def numNeighbours(x,y,grid,wrap=True):
 	"""numNeighbours(x,y,grid,wrap=True):
-- x: the x coordinate of the cell in question
-- y: the y coordinate of the cell in question
-- grid: The 2 dimensional character array containing the ALIVE/DEAD states of the cells
-- wrap: If true, this function will wrap around to check neighbours on the opposite edge
+- x (int): the x coordinate of the cell in question
+- y (int): the y coordinate of the cell in question
+- grid (2D List): holds the alive/dead state of cells
+- wrap (bool): If true, will wrap around to check neighbours on the opposite edge
 
-Returns: number of alive neighbours a cell at position (x,y) in the provided grid has.
+Returns: number of alive neighbours a cell at position (x,y) in the grid.
 """
+	if (len(grid) == 0 or len(grid[0]) == 0):
+		return 0
 	num = 0 
+
+	height = len(grid)
+	width = len(grid[0])
+
 	for dy in [-1,0,1]:
 		ny = y + dy
         
-		if (ny < 0 or ny >= len(grid)):
+		if (ny < 0 or ny >= height):
 			if (wrap):
-				ny = ny % len(grid)
+				ny = ny % height
 			else:
 				continue
 
@@ -40,22 +76,23 @@ Returns: number of alive neighbours a cell at position (x,y) in the provided gri
 				continue
 			nx = x + dx
 
-			if (nx < 0 or nx >= len(grid[ny])): 
+			if (nx < 0 or nx >= width): 
 				if (wrap):
-					nx = nx % len(grid[ny])
+					nx = nx % width
 				else:
 					continue
 			
 			if (grid[ny][nx] == ALIVE): 
 				num += 1
+#	print "Cell at (%d,%d) has %d neighbours." % (x,y,num)
 	return num
 
 def gridCopy(grid):
 	"""gridCopy(grid):
-- grid: the 2 dimensional character array to make a copy of
+- grid (2D List): holds the alive/dead state of cells
 
 Returns: a value (as opposed to reference) copy of the grid.
-This is used to prevent python's automatic use of pointers from interfering with nextGen
+Used to prevent python's automatic use of pointers from interfering with nextGen
 
 """
 	temp = []
@@ -65,29 +102,60 @@ This is used to prevent python's automatic use of pointers from interfering with
 			temp[i].append(grid[i][j])
 	return temp
 
-def nextGen(grid):
+def nextGen(grid,autoExpand=False):
 	"""nextGen(grid):
-- grid: the 2 dimensional character array to process
+- grid (2D List): holds the alive/dead state of cells
+- autoExpand (bool): if true, the grid will automatically expand to accomodate
+  the birth of cells outside the boundary of the grid
 
 Returns: the generation following the cells described in grid
 
 """
-	newgrid = gridCopy(grid)
-	for i in range(len(grid)):
-		for j in range(len(grid[i])):
-			num = numNeighbours(j,i,grid)
-			if (grid[i][j] == ALIVE and LIVECOND.count(num) == 0):
-				newgrid[i][j] = DEAD
-			elif (grid[i][j] == DEAD and BIRTHCOND.count(num)):
-				newgrid[i][j] = ALIVE
-	return gridCopy(newgrid)
+	if (len(grid) == 0 or len(grid[0]) == 0):
+		return 0
+	startGrid = gridCopy(grid)
+	
+	if (autoExpand):
+		expand = getExpansion(startGrid)
+
+		# Expand the left side
+		if (expand[0]):
+			startGrid = map(lambda x: [DEAD] + x,startGrid)
+
+		# Expand the right side
+		if (expand[1]):
+			startGrid = map(lambda x: x + [DEAD],startGrid)
+
+		width = len(startGrid[0])
+
+		# Expand the top side
+		if (expand[2]):
+			startGrid = [[DEAD] * width] + startGrid
+
+		# Expand the bottom
+		if (expand[3]):
+			startGrid = startGrid + [[DEAD] * width]
+	
+	height = len(startGrid)
+	width = len(startGrid[0])
+
+	endGrid = gridCopy(startGrid)
+
+	for y in range(height):
+		for x in range(width):
+			num = numNeighbours(x,y,startGrid,not autoExpand)
+			if (startGrid[y][x] == ALIVE and LIVECOND.count(num) == 0):
+				endGrid[y][x] = DEAD
+			elif (startGrid[y][x] == DEAD and BIRTHCOND.count(num)):
+				endGrid[y][x] = ALIVE
+	return endGrid
 
 def randGrid(rows,columns):
 	"""randGrid(rows,columns)
-- rows: the number of rows in the generated grid
-- columns: the number of columns in the generated grid
+- rows (int): the number of rows in the generated grid
+- columns (int): the number of columns in the generated grid
 
-Returns: a randomized ALIVE/DEAD grid
+Returns: a 2D list with randomized alive/dead cells
 
 """
 	grid = []
@@ -97,16 +165,16 @@ Returns: a randomized ALIVE/DEAD grid
 			grid[i].append([ALIVE,DEAD][randint(0,1)])
 	return grid
 
-def str2grid(string, liveChar, deadChar):
-	"""str2grid(string, liveChar, deadChar)
-- string: the input string with newlines to convert to a grid
-- liveChar: the character representing an alive cell in string
-- deadChar: the character representing a dead cell in string
+def str2grid(str, liveChar=ALIVE, deadChar=DEAD):
+	"""str2grid(str, liveChar, deadChar)
+- str (string): the input string with newlines to convert to a grid
+- liveChar (char): the character representing an alive cell in string
+- deadChar (char): the character representing a dead cell in string
 
-Returns: a grid correspoding to the provided input string
+Returns: a grid corresponding to the provided input string
 
 """
-	grid = string.split("\n");
+	grid = str.split("\n");
 	grid = filter(lambda x: len(x) > 0, grid)
 	grid = map(lambda x: 
 		list(x.replace(liveChar,ALIVE).replace(deadChar,DEAD)),
@@ -116,7 +184,7 @@ Returns: a grid correspoding to the provided input string
 
 def printGrid(grid):
 	"""printGrid(grid)
-- grid: 2 dimensional character list
+- grid (2D list): holds the alive/dead state of cells
 
 Returns: None
 
